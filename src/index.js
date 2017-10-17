@@ -33,6 +33,12 @@ function ResponseWrapper(body, init) {
   return new ActualResponse(body, init);
 }
 
+function ResponseWrapperJson(body, init) {
+  let response = new ActualResponse(null, init);
+  response.json = jest.fn(() => Promise.resolve(body));
+  return response;
+}
+
 const fetch = jest.fn();
 fetch.Headers = Headers;
 fetch.Response = ResponseWrapper;
@@ -42,6 +48,12 @@ fetch.mockResponse = (body, init) => {
     () => Promise.resolve(new ResponseWrapper(body, init))
   );
 };
+
+fetch.mockResponseJson = (body, init) => {
+  return fetch.mockImplementation(
+    () => Promise.resolve(new ResponseWrapperJson(body, init))
+  );
+}
 
 fetch.mockReject = () => {
   return fetch.mockImplementation(
